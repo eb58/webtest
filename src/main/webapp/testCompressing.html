@@ -20,7 +20,9 @@
             data: strdata, // aus data.js
             success: function (data) {
               //console.log('here we are - data:', data, LZString.decompressFromUTF16(data));
-              console.log('here we are - data:', Array.from(pako.ungzip(atob(data))).map(c=>String.fromCharCode(c)).join(''));
+              console.log('here we are', data.length);
+              var uncompressedData =  Array.from(pako.ungzip(atob(data))).map(c=>String.fromCharCode(c)).join('');
+              console.log('here we areq', uncompressedData.length );
             },
             error: function (data, b, c) {
               console.log('error:', data, b, c);

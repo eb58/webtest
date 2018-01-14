@@ -25,7 +25,7 @@
         for (var r = 0; r < img.nr; r++) {
           for (var c = 0; c < img.nc; c++) {
             var v = ctx.getImageData(c, r, 1, 1).data;
-            img.data[r * img.nc + c] = (v[0] + v[1] + v[2] + v[3]) > 0;
+            img.data[r * img.nc + c] = (v[0] + v[1] + v[2] + v[3]) > 0 ? 1 : 0;
           }
         }
         return img;
@@ -53,7 +53,7 @@
           $.ajax({
             method: 'post',
             url: "OcrServlet",
-            data: JSON.stringify(getImg(ctx)),
+            data: {imgdata: JSON.stringify(getImg(ctx))},
             success: function (data) {
               $("#somediv").text(JSON.stringify(data));
               console.log('here we are', data);

@@ -12,12 +12,18 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.codec.binary.Base64;
 
 public class EBCompress {
-  public static String compressStringBase64(String s) throws IOException {
-    ByteArrayOutputStream bs = new ByteArrayOutputStream();
-    try (GZIPOutputStream gzip = new GZIPOutputStream(bs)) {
+
+  public static String compressStringBase64(String s) {
+    try {
+      ByteArrayOutputStream bs = new ByteArrayOutputStream();
+      GZIPOutputStream gzip = new GZIPOutputStream(bs);
       gzip.write(s.getBytes());
+      gzip.close();
+      return Base64.encodeBase64String(bs.toByteArray());
+    } catch (IOException ex) {
+
     }
-    return Base64.encodeBase64String(bs.toByteArray());
+    return s;
   }
 
   public static String decompressStringBase64(String s) throws IOException {
@@ -30,16 +36,17 @@ public class EBCompress {
     }
     return sb.toString();
   }
-  
+
   public static void main(String... args) throws IOException {
     String s = Util.readFile("c:/temp/new1.txt");
     StopWatch sw = new StopWatch();
+    String xx = compressStringBase64("Hallo Welt");
     System.out.println(decompressStringBase64(compressStringBase64("Hallo Welt")));
     System.out.println(decompressStringBase64(compressStringBase64("Hallo vcfvcvvcyxvvg f gvklfdj gkldfjg lkd fjgfkldskjflksad jkflkj sdfflk dfsjflkjdsdlkjsadlk jdsdkljdskfd jTest fdk")));
 
     System.out.println("Len:" + s.length());
     String a = compressStringBase64(s);
-    System.out.println("After Compress:" + sw.getElapsedTimeInMilliSecs() + "ms, Len:" + a.length() );
+    System.out.println("After Compress:" + sw.getElapsedTimeInMilliSecs() + "ms, Len:" + a.length()+ ' ' + a );
 
     String b = decompressStringBase64(a);
     System.out.println("After Decompress:" + sw.getElapsedTimeInMilliSecs() + "ms, Len:" + b.length());
