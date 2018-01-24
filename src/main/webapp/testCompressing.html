@@ -1,39 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>TODO supply a title</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/vendor/underscore-1.8.3/underscore.js"></script>
-    <script src="/vendor/jQuery-1.11.3/jquery.js"></script>
-    <script src="/vendor/jQueryUI-1.12.0/jquery-ui.js"></script>
-    <script src="/vendor/compression/pako.min.js"></script>
-    <script src="/vendor/paper-full.min.js"></script>
-    <script src="/javascript/data.js"></script>
-    
-    <script>
-      $(document).ready(function () {
-        $('#btnTest').on('click', function () {
-          $.ajax({
-            method: 'post',
-            url: "CompressServlet",
-            data: strdata, // aus data.js
-            success: function (data) {
-              //console.log('here we are - data:', data, LZString.decompressFromUTF16(data));
-              console.log('here we are', data.length);
-              var uncompressedData =  Array.from(pako.ungzip(atob(data))).map(c=>String.fromCharCode(c)).join('');
-              console.log('here we areq', uncompressedData.length );
-            },
-            error: function (data, b, c) {
-              console.log('error:', data, b, c);
-            }
-          });
-        })
-      })
-    </script>
-  </head>
-  <body>
-    <div>TODO write content</div>
-    <button id="btnTest">TEST</button>
-  </body>
+   <head>
+      <title>TODO supply a title</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="/vendor/underscore-1.8.3/underscore.js"></script>
+      <script src="/vendor/jQuery-1.11.3/jquery.js"></script>
+      <script src="/vendor/jQueryUI-1.12.0/jquery-ui.js"></script>
+      <script src="/vendor/compression/pako.min.js"></script>
+      <script src="/vendor/paper-full.min.js"></script>
+      <script src="/javascript/data.js"></script>
+
+      <script>
+         var compress = function (data, afterCompress) {
+            $.ajax({
+               method: 'post',
+               url: "CompressServlet",
+               data: { data: data},
+               success: afterCompress,
+               error: function (a, b, c) {
+                  console.log('error:', a, b, c);
+               }
+            });
+         }
+
+         $(document).ready(function () {
+            $('#btnTest').on('click', function () {
+               compress(strdata, function (compressedData) { // from data.js
+                  console.log('AAA', compressedData.length);
+                  var uncompressedData = Array.from(pako.ungzip(atob(compressedData))).map(c => String.fromCharCode(c)).join('');
+                  console.log('BBB', uncompressedData.length);
+               });
+            });
+            $('#btnTestTextArea').on('click', function () {
+               var strdata = $('#taSrc').val();
+               console.log('AAA', strdata.length);
+               compress(strdata, function (compressedData) {
+                  console.log('BBB', compressedData.length);
+                  var uncompressedData = Array.from(pako.ungzip(atob(compressedData))).map(c => String.fromCharCode(c)).join('');
+                  console.log('CCC', uncompressedData.length);
+                  $('#taDstCompressed').text(compressedData);
+                  $('#taDstUncompressed').text(uncompressedData);
+               });
+            });
+         });
+      </script>
+   </head>
+   <body>
+      <h1>Test Komprimierung</h1>
+      <button id="btnTest">Komprimiere 1</button>
+      <br/>
+      <br/>
+      <textarea id="taSrc" cols=120 rows=15 ></textarea>
+      <br/>
+      <button id="btnTestTextArea">Komprimiere 2</button>
+      <br>
+      <textarea id="taDstCompressed" cols=120 rows=15 disabled></textarea>
+      <br>
+      <textarea id="taDstUncompressed" cols=120 rows=15 disabled></textarea>
+   </body>
 </html>

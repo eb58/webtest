@@ -1,84 +1,86 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Ocr Tester</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <style>
-      frame-div { overflow: auto; max-width: 500px; border: 2px grey solid; padding: 10px 10px 10px 10px; }
-      out-div { background-color:lightcyan; float:left; margin:10px 10px 10px 10px; width:100px; height: 150px}
-      btn-div {float:right; margin:10px 10px 10px 10px;}
-      button {margin:3px 3px 3px 3px; width: 100px;}
-    </style>
-    <script src="/vendor/underscore-1.8.3/underscore.js"></script>
-    <script src="/vendor/jQuery-1.11.3/jquery.js"></script>
-    <script src="/vendor/jQueryUI-1.12.0/jquery-ui.js"></script>
-    <script src="/vendor/paper-full.min.js"></script>
-    <script>
+   <head>
+      <title>Ocr Tester</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <style>
+         #frame-div { overflow: auto; max-width: 300px; border: 2px grey solid; padding: 10px 10px 10px 10px; }
+         #out-div { margin:30px 3px 3px 3px; width:100px; height:30px}
+         #btn-div {float:right; margin:10px 10px 10px 10px;}
+         button {margin:3px 3px 3px 3px; width: 100px;}
+      </style>
+      <script src="/vendor/underscore-1.8.3/underscore.js"></script>
+      <script src="/vendor/jQuery-1.11.3/jquery.js"></script>
+      <script src="/vendor/jQueryUI-1.12.0/jquery-ui.js"></script>
+      <script src="/vendor/paper-full.min.js"></script>
+      <script>
 
-      function getImg(ctx) {
-        var img = {
-          nr: ctx.canvas.height,
-          nc: ctx.canvas.width,
-          data: new Array(ctx.canvas.width * ctx.canvas.height).fill(0),
-        }
-
-        for (var r = 0; r < img.nr; r++) {
-          for (var c = 0; c < img.nc; c++) {
-            var v = ctx.getImageData(c, r, 1, 1).data;
-            img.data[r * img.nc + c] = (v[0] + v[1] + v[2] + v[3]) > 0 ? 1 : 0;
-          }
-        }
-        return img;
-      }
-
-      $(document).ready(function () {
-        paper.install(window);
-        paper.setup('my-canvas');
-        var canvas = $('#my-canvas')[0];
-        var ctx = canvas.getContext("2d");
-        var tool = new Tool();
-        var path;
-
-        tool.onMouseDown = function (event) {
-          path = new Path();
-          path.strokeColor = 'black';
-          path.strokeWidth = '6';
-          path.add(event.point);
-        }
-
-        tool.onMouseDrag = function (event) {
-          path.add(event.point);
-        }
-        $('#btn-recognize').on("click", function () { // When HTML DOM "click" event is invoked on element with ID "somebutton", execute the following function...
-          $.ajax({
-            method: 'post',
-            url: "OcrServlet",
-            data: {imgdata: JSON.stringify(getImg(ctx))},
-            success: function (data) {
-              $("#somediv").text(JSON.stringify(data));
-              console.log('here we are', data);
-              $('#outDiv').text(data);
-            },
-            error: function (data, b, c) {
-              console.log('error:', data, b, c);
+         function getImg(ctx) {
+            var img = {
+               nr: ctx.canvas.height,
+               nc: ctx.canvas.width,
+               data: new Array(ctx.canvas.width * ctx.canvas.height).fill(0),
             }
-          });
-        })
-        $('#btn-reset').on("click", function () {
-          paper.setup('my-canvas');
-        })
-      })
-    </script>
-  </head>
-  <body>
 
-    <div id='frame-div'>
-      <canvas id='my-canvas' width="100" height="150" style='background-color:lightcyan; float:left; margin:10px 10px 10px 10px'></canvas>
-      <div id='outDiv'></div>
-      <div id='btnDiv' style="">
-        <button id="btn-reset">Zurücksetzen</button><br>
-        <button id="btn-recognize">Recognize</button>
+            for (var r = 0; r < img.nr; r++) {
+               for (var c = 0; c < img.nc; c++) {
+                  var v = ctx.getImageData(c, r, 1, 1).data;
+                  img.data[r * img.nc + c] = (v[0] + v[1] + v[2] + v[3]) > 0 ? 1 : 0;
+               }
+            }
+            return img;
+         }
+
+         $(document).ready(function () {
+            paper.install(window);
+            paper.setup('my-canvas');
+            var canvas = $('#my-canvas')[0];
+            var ctx = canvas.getContext("2d");
+            var tool = new Tool();
+            var path;
+
+            tool.onMouseDown = function (event) {
+               path = new Path();
+               path.strokeColor = 'black';
+               path.strokeWidth = '6';
+               path.add(event.point);
+            }
+
+            tool.onMouseDrag = function (event) {
+               path.add(event.point);
+            }
+            $('#btn-recognize').on("click", function () {
+               $.ajax({
+                  method: 'post',
+                  url: "OcrServlet",
+                  data: {imgdata: JSON.stringify(getImg(ctx))},
+                  success: function (data) {
+                     console.log('here we are', data);
+                     $('#out-div').text('Das ist eine ' + data);
+                  },
+                  error: function (data, b, c) {
+                     console.log('error:', data, b, c);
+                  }
+               });
+            });
+            $('#btn-reset').on("click", function () {
+               $('#out-div').text('');
+               paper.project.clear()
+            });
+         })
+      </script>
+   </head>
+   <body>
+
+      <div id='frame-div'>
+         <canvas id='my-canvas' width="100" height="150" style='background-color:lightcyan; float:left; margin:10px 10px 10px 10px'></canvas>
+         <div id='btn-div' style="">
+            <button id="btn-reset">Zurücksetzen</button><br>
+            <button id="btn-recognize">Recognize</button>
+            <br>
+            <div id='out-div'></div>
+            <div id='somediv'></div>
+         </div>
       </div>
-    </div>
-  </body>
+   </body>
 </html>

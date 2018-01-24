@@ -15,23 +15,23 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 
 
-@WebFilter(filterName = "NewFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR, DispatcherType.INCLUDE})
-public class NewFilter implements Filter {
+@WebFilter(filterName = "JustATestFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR, DispatcherType.INCLUDE})
+public class JustATestFilter implements Filter {
 
-  private static final boolean debug = true;
+  private static final boolean DEBUG = true;
 
   // The filter configuration object we are associated with.  If
   // this value is null, this filter instance is not currently
   // configured. 
   private FilterConfig filterConfig = null;
 
-  public NewFilter() {
+  public JustATestFilter() {
   }
 
   private void doBeforeProcessing(ServletRequest request, ServletResponse response)
           throws IOException, ServletException {
-    if (debug) {
-      log("NewFilter:DoBeforeProcessing");
+    if (DEBUG) {
+      log("JustATestFilter:DoBeforeProcessing");
     }
 
     // Write code here to process the request and/or response before
@@ -60,8 +60,8 @@ public class NewFilter implements Filter {
 
   private void doAfterProcessing(ServletRequest request, ServletResponse response)
           throws IOException, ServletException {
-    if (debug) {
-      log("NewFilter:DoAfterProcessing");
+    if (DEBUG) {
+      log("JustATestFilter:DoAfterProcessing");
     }
 
     // Write code here to process the request and/or response after
@@ -96,8 +96,8 @@ public class NewFilter implements Filter {
           FilterChain chain)
           throws IOException, ServletException {
 
-    if (debug) {
-      log("NewFilter:doFilter()");
+    if (DEBUG) {
+      log("JustATestFilter:doFilter()");
     }
 
     doBeforeProcessing(request, response);
@@ -156,8 +156,8 @@ public class NewFilter implements Filter {
   public void init(FilterConfig filterConfig) {
     this.filterConfig = filterConfig;
     if (filterConfig != null) {
-      if (debug) {
-        log("NewFilter:Initializing filter");
+      if (DEBUG) {
+        log("JustATestFilter:Initializing filter");
       }
     }
   }
@@ -168,9 +168,9 @@ public class NewFilter implements Filter {
   @Override
   public String toString() {
     if (filterConfig == null) {
-      return ("NewFilter()");
+      return ("JustATestFilter()");
     }
-    StringBuffer sb = new StringBuffer("NewFilter(");
+    StringBuffer sb = new StringBuffer("JustATestFilter(");
     sb.append(filterConfig);
     sb.append(")");
     return (sb.toString());
